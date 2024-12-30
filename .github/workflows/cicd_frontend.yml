@@ -76,7 +76,6 @@ jobs:
 
       - name: Run pulled image
         run: |
-          docker run -d -p 5173:5173 -e VITE_BASE_URL=${{ secrets.VITE_BASE_URL }}
-
+          docker run -d -p 5173:5173 -e VITE_BASE_URL=${{ secrets.VITE_BASE_URL }} ${{ secrets.DOCKER_USERNAME }}/movie_review-frontend:latest
   
 
