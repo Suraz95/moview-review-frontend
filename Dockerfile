@@ -30,7 +30,7 @@ COPY --from=build /app/dist /usr/share/nginx/html
 EXPOSE 80
 
 # Set the environment variable in the Nginx container
-ENV VITE_BASE_URL=${BASE_URL}
+ENV VITE_BASE_URL=${VITE_BASE_URL}
 
 # Start nginx to serve the app
 CMD ["nginx", "-g", "daemon off;"]
