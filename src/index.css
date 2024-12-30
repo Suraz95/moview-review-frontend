@@ -1,0 +1,92 @@
+/* removes the scroll bar from number input */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+   -webkit-appearance: none;
+   -moz-appearance: none;
+   appearance: none;
+   margin: 0;
+}
+
+/* Loader */
+.overlay {
+   height: 100vh;
+   width: 100vw;
+   position: fixed;
+   display: grid;
+   place-items: center;
+   background: rgba(0, 0, 0, 0.6);
+   z-index: 100;
+}
+
+::-webkit-scrollbar {
+   width: 10px;
+   height: 5px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+   background: #f1f1f1;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+   background: #888;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+   background: #555;
+}
+
+/* image slider */
+.slide-in-from-right {
+   animation: slideInFromRight 0.3s ease-in;
+}
+@keyframes slideInFromRight {
+   from {
+      transform: translateX(100%);
+   }
+   to {
+      transform: translateX(0%);
+   }
+}
+
+.slide-in-from-left {
+   animation: slideInFromLeft 0.3s ease-in;
+}
+@keyframes slideInFromLeft {
+   from {
+      transform: translateX(-100%);
+   }
+   to {
+      transform: translateX(0%);
+   }
+}
+
+.slide-out-to-left {
+   animation: slideOutToLeft 0.3s ease-in;
+}
+@keyframes slideOutToLeft {
+   from {
+      transform: translateX(0%);
+   }
+   to {
+      transform: translateX(-100%);
+   }
+}
+
+.slide-out-to-right {
+   animation: slideOutToRight 0.3s ease-in;
+}
+@keyframes slideOutToRight {
+   from {
+      transform: translateX(0%);
+   }
+   to {
+      transform: translateX(100%);
+   }
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
