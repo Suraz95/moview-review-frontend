@@ -12,6 +12,10 @@ RUN npm install
 # Copy the rest of the application files
 COPY . .
 
+# Set the environment variable for the build process
+ARG BASE_URL
+RUN echo "VITE_BASE_URL=$BASE_URL" >> .env
+
 # Build the React app for production
 RUN npm run build
 
@@ -20,10 +24,14 @@ RUN npm run build
 FROM nginx:alpine
 
 # Copy the build output from the previous build stage to the nginx directory
+RUN rm -rf *
 COPY --from=build /app/dist /usr/share/nginx/html
 
 # Expose port 80 for the app to be accessible
 EXPOSE 80
+
+# Set the environment variable in the Nginx container
+ENV VITE_BASE_URL=$BASE_URL
 
 # Start nginx to serve the app
 CMD ["nginx", "-g", "daemon off;"]
