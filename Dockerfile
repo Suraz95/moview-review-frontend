@@ -23,7 +23,8 @@ RUN npm run build
 # Use a smaller image for serving the app (nginx in this case)
 FROM nginx:alpine
 
-RUN rm -rf ./*
+RUN rm -rf /usr/share/nginx/html/*
+
 # Copy the build output from the previous build stage to the nginx directory
 COPY --from=build /app/dist /usr/share/nginx/html
 
