@@ -19,20 +19,24 @@ RUN echo "VITE_BASE_URL=$VITE_BASE_URL" >> .env
 # Build the React app for production
 RUN npm run build
 
-# Step 2: Serve the app using a lightweight web server
-# Use a smaller image for serving the app (nginx in this case)
-FROM nginx:alpine
+# Step 2: Serve the app using a simple HTTP server
+# Use the official Node.js image for serving the app
+FROM node:18-alpine AS production
 
-RUN rm -rf /usr/share/nginx/html/*
+# Install 'serve' to serve the built files
+RUN npm install -g serve
 
-# Copy the build output from the previous build stage to the nginx directory
-COPY --from=build /app/dist /usr/share/nginx/html
+# Set the working directory for serving
+WORKDIR /app
 
-# Expose port 80 for the app to be accessible
-EXPOSE 80
+# Copy the build output from the previous build stage
+COPY --from=build /app/dist /app/dist
 
-# Set the environment variable in the Nginx container
+# Expose the port the app will run on
+EXPOSE 5000
+
+# Set the environment variable for the app (optional)
 ENV VITE_BASE_URL=${VITE_BASE_URL}
 
-# Start nginx to serve the app
-CMD ["nginx", "-g", "daemon off;"]
+# Start the app using 'serve' on port 5000
+CMD ["serve", "-s", "dist", "-l", "5000"]
