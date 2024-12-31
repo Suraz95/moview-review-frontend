@@ -16,6 +16,9 @@ RUN npm run build
 # Step 2: Set up Nginx to serve the app
 FROM nginx:alpine
 
+# Create the 'www-data' user if it's not already present
+RUN adduser -D -g 'www-data' www-data
+
 # Remove the default Nginx index.html
 RUN rm -rf /usr/share/nginx/html/*
 
