@@ -19,21 +19,20 @@ RUN echo "VITE_BASE_URL=$VITE_BASE_URL" >> .env
 # Build the React app for production
 RUN npm run build
 
-# Step 2: Serve the app using Nginx
-# Use Nginx for serving the built app
-FROM nginx:alpine AS production
+# Step 2: Serve the app using a lightweight web server
+# Use a smaller image for serving the app (nginx in this case)
+FROM nginx:alpine
 
-# Remove the default nginx.conf
-RUN rm /etc/nginx/conf.d/default.conf
+RUN rm -rf /usr/share/nginx/html/*
 
-# Copy a custom nginx configuration file
-COPY nginx.conf /etc/nginx/nginx.conf
-
-# Copy the build output from the previous build stage to Nginx's default folder
+# Copy the build output from the previous build stage to the nginx directory
 COPY --from=build /app/dist /usr/share/nginx/html
 
-# Expose the port the app will run on
+# Expose port 80 for the app to be accessible
 EXPOSE 80
 
-# Start Nginx
+# Set the environment variable in the Nginx container
+ENV VITE_BASE_URL=${VITE_BASE_URL}
+
+# Start nginx to serve the app
 CMD ["nginx", "-g", "daemon off;"]
