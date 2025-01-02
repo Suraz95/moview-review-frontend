@@ -4,7 +4,7 @@ FROM node:18-alpine AS build
 WORKDIR /app
 
 # Install dependencies
-COPY package.json package-lock.json ./
+COPY package.json package-lock.json ./ 
 RUN npm install
 
 # Copy the application files
@@ -25,8 +25,15 @@ RUN curl -o /etc/nginx/nginx.conf https://raw.githubusercontent.com/Suraz95/movi
 # Copy the build output from the build stage to Nginx's serving directory
 COPY --from=build /app/dist /usr/share/nginx/html
 
+# Add a script to inject runtime environment variables
+COPY ./env-config.sh /usr/share/nginx/html/env-config.sh
+RUN chmod +x /usr/share/nginx/html/env-config.sh
+
+# Create the runtime environment configuration file dynamically
+RUN echo "window.__RUNTIME_CONFIG__ = {};" > /usr/share/nginx/html/env-config.js
+
 # Expose port 80 for the app to be accessible
 EXPOSE 80
 
-# Start nginx to serve the app
-CMD ["nginx", "-g", "daemon off;"]
+# Start Nginx with runtime variable injection
+CMD ["/bin/sh", "-c", "/usr/share/nginx/html/env-config.sh && nginx -g 'daemon off;'"]
