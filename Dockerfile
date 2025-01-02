@@ -10,11 +10,12 @@ RUN npm install
 # Copy the application files
 COPY . ./
 
+# setting env url
+ENV VITE_BASE_URL=${VITE_BASE_URL}
+
 # Build the React app for production
 RUN npm run build
 
-# setting env url
-ENV VITE_BASE_URL=${VITE_BASE_URL}
 
 # Step 2: Set up Nginx to serve the app
 FROM nginx:alpine
