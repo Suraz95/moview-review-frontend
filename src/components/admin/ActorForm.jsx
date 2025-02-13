@@ -14,20 +14,38 @@ const ActorForm = ({ btnText, title, onSubmit, isLoading, profileToUpdate }) => 
    const [actorInfo, setActorInfo] = useState(defaultActorValues);
    const [selectedPosterForUI, setSelectedPosterForUI] = useState(false);
 
-   const updatePosterforUI = (poster) => {
-      const url = URL.createObjectURL(poster);
-      setSelectedPosterForUI(url);
-   };
+   // const updatePosterforUI = (poster) => {
+   //    const url = URL.createObjectURL(poster);
+   //    setSelectedPosterForUI(url);
+   // };
+const updatePosterforUI = (poster) => {
+   if (!poster) return; // Ensure poster is valid before using it
+   const url = URL.createObjectURL(poster);
+   setSelectedPosterForUI(url);
+};
 
-   const handleChange = ({ target }) => {
-      const { name, value, files } = target;
-      if (name === "avatar") {
-         const avatar = files[0];
-         updatePosterforUI(avatar);
-         return setActorInfo({ ...actorInfo, avatar });
-      }
-      setActorInfo({ ...actorInfo, [name]: value });
-   };
+   // const handleChange = ({ target }) => {
+   //    const { name, value, files } = target;
+   //    if (name === "avatar") {
+   //       const avatar = files[0];
+   //       updatePosterforUI(avatar);
+   //       return setActorInfo({ ...actorInfo, avatar });
+   //    }
+   //    setActorInfo({ ...actorInfo, [name]: value });
+   // };
+const handleChange = ({ target }) => {
+   const { name, value, files } = target;
+
+   if (name === "avatar") {
+      const avatar = files?.[0]; // Ensure there's a file selected
+      if (!avatar) return; // Prevent errors if no file is selected
+
+      updatePosterforUI(avatar); // Update UI with the preview
+      return setActorInfo((prev) => ({ ...prev, avatar })); // Update state properly
+   }
+
+   setActorInfo((prev) => ({ ...prev, [name]: value }));
+};
 
    const handleSubmit = (e) => {
       e.preventDefault();
@@ -44,12 +62,32 @@ const ActorForm = ({ btnText, title, onSubmit, isLoading, profileToUpdate }) => 
       setActorInfo({ ...defaultActorValues });
    };
 
+   // useEffect(() => {
+   //    if (profileToUpdate) {
+   //       setActorInfo({ ...profileToUpdate, avatar: null });
+   //       setSelectedPosterForUI(profileToUpdate.avatar.url);
+   //    }
+   // }, [profileToUpdate]);
    useEffect(() => {
-      if (profileToUpdate) {
-         setActorInfo({ ...profileToUpdate, avatar: null });
+   if (profileToUpdate) {
+      setActorInfo({ ...profileToUpdate, avatar: null });
+
+      // Ensure avatar exists before accessing url
+      if (profileToUpdate.avatar && profileToUpdate.avatar.url) {
          setSelectedPosterForUI(profileToUpdate.avatar.url);
+      } else {
+         setSelectedPosterForUI(null); // Set default value if no avatar
       }
-   }, [profileToUpdate]);
+   }
+}, [profileToUpdate]);
+useEffect(() => {
+   return () => {
+      if (selectedPosterForUI) {
+         URL.revokeObjectURL(selectedPosterForUI);
+      }
+   };
+}, [selectedPosterForUI]);
+
 
    const { gender, name, description } = actorInfo;
    return (

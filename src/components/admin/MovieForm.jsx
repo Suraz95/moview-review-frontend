@@ -88,17 +88,35 @@ const MovieForm = ({ onSubmit, isLoading, movieToUpdate }) => {
       setSelectedPosterForUI(url);
    };
 
-   const handleChange = ({ target }) => {
-      const { value, name, files } = target;
-      if (name === "poster") {
-         // poster upload to cloud
-         const poster = files[0];
-         updatePosterforUI(poster);
-         return setMovieInfo({ ...movieInfo, poster });
+   // const handleChange = ({ target }) => {
+   //    const { value, name, files } = target;
+   //    if (name === "poster") {
+   //       // poster upload to cloud
+   //       const poster = files[0];
+   //       updatePosterforUI(poster);
+   //       return setMovieInfo({ ...movieInfo, poster });
+   //    }
+   //    if (name === "writers") return setWriterName(value);
+   //    setMovieInfo({ ...movieInfo, [name]: value });
+   // };
+const handleChange = ({ target }) => {
+   const { value, name, files } = target;
+   if (name === "poster") {
+      const poster = files?.[0];
+      if (!poster) return;
+      updatePosterforUI(poster);
+      return setMovieInfo((prev) => ({ ...prev, poster }));
+   }
+   if (name === "writers") return setWriterName(value);
+   setMovieInfo((prev) => ({ ...prev, [name]: value }));
+};
+useEffect(() => {
+   return () => {
+      if (selectedPosterForUI) {
+         URL.revokeObjectURL(selectedPosterForUI);
       }
-      if (name === "writers") return setWriterName(value);
-      setMovieInfo({ ...movieInfo, [name]: value });
    };
+}, [selectedPosterForUI]);
 
    //tags
    const updateTags = (allTags) => {
@@ -166,12 +184,30 @@ const MovieForm = ({ onSubmit, isLoading, movieToUpdate }) => {
       );
    };
 
+   // useEffect(() => {
+   //    if (movieToUpdate) {
+   //       setMovieInfo({ ...movieToUpdate, poster: null, releaseDate: releaseDate.split("T")[0] });
+   //       setSelectedPosterForUI(movieToUpdate.poster.url);
+   //    }
+   // }, [movieToUpdate]);
    useEffect(() => {
-      if (movieToUpdate) {
-         setMovieInfo({ ...movieToUpdate, poster: null, releaseDate: releaseDate.split("T")[0] });
+   if (movieToUpdate) {
+      setMovieInfo({
+         ...movieToUpdate,
+         poster: null, // Reset poster so new upload can occur
+         releaseDate: movieToUpdate.releaseDate 
+            ? movieToUpdate.releaseDate.split("T")[0] 
+            : "",
+      });
+
+      if (movieToUpdate.poster && movieToUpdate.poster.url) {
          setSelectedPosterForUI(movieToUpdate.poster.url);
+      } else {
+         setSelectedPosterForUI(""); // Or use a placeholder image if desired
       }
-   }, [movieToUpdate]);
+   }
+}, [movieToUpdate]);
+
 
    const {
       title,
